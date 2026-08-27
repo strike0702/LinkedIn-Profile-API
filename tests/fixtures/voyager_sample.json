@@ -1,0 +1,96 @@
+{
+  "data": {
+    "elements": ["urn:li:fsd_profile:ACoAAB123456789"]
+  },
+  "included": [
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Profile",
+      "entityUrn": "urn:li:fsd_profile:ACoAAB123456789",
+      "firstName": "John",
+      "lastName": "Doe",
+      "headline": "Software Engineer at Acme Corp",
+      "summary": "Experienced engineer building scalable systems.",
+      "publicIdentifier": "john-doe",
+      "locationName": "San Francisco, California, United States",
+      "profilePicture": "urn:li:fsd_profilePicture:123"
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.PhotoFilterPicture",
+      "entityUrn": "urn:li:fsd_profilePicture:123",
+      "rootUrl": "https://media.licdn.com/dms/image/profile/",
+      "artifacts": [
+        {"width": 100, "fileIdentifyingUrlPathSegment": "john-doe_100"},
+        {"width": 400, "fileIdentifyingUrlPathSegment": "john-doe_400"}
+      ]
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.PhotoFilterPicture",
+      "entityUrn": "urn:li:fsd_backgroundPicture:456",
+      "displayImageReference": "background",
+      "rootUrl": "https://media.licdn.com/dms/image/background/",
+      "artifacts": [
+        {"width": 800, "fileIdentifyingUrlPathSegment": "cover_800"}
+      ]
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Position",
+      "title": "Senior Software Engineer",
+      "companyName": "Acme Corp",
+      "locationName": "San Francisco, CA",
+      "description": "Building API platforms.",
+      "dateRange": {
+        "start": {"year": 2020, "month": 3},
+        "end": {"year": 2023, "month": 6}
+      }
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Position",
+      "title": "Staff Engineer",
+      "companyName": "Tech Inc",
+      "locationName": "Remote",
+      "dateRange": {
+        "start": {"year": 2023, "month": 7},
+        "end": {}
+      }
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Education",
+      "schoolName": "State University",
+      "degreeName": "Bachelor of Science",
+      "fieldOfStudy": "Computer Science",
+      "grade": "3.8 GPA",
+      "activities": "ACM, Hackathon club",
+      "dateRange": {
+        "start": {"year": 2012, "month": 9},
+        "end": {"year": 2016, "month": 5}
+      }
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Skill",
+      "name": "Python"
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Skill",
+      "name": "FastAPI"
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Certification",
+      "name": "AWS Solutions Architect",
+      "authority": "Amazon Web Services",
+      "url": "https://aws.amazon.com/certification/",
+      "timePeriod": {
+        "start": {"year": 2021, "month": 4}
+      }
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Language",
+      "name": "English",
+      "proficiency": "NATIVE_OR_BILINGUAL"
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.Language",
+      "name": "Spanish",
+      "proficiency": {"name": "PROFESSIONAL_WORKING"}
+    }
+  ]
+}
