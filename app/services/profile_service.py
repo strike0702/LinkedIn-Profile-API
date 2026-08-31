@@ -27,6 +27,7 @@ class ProfileService:
             return cached
 
         raw = await self.voyager.fetch_profile_raw(slug)
+        raw = await self.voyager.enrich_with_all_skills(slug, raw)
         parsed = parse_profile_response(raw)
         profile = ProfileResponse.model_validate(parsed)
 

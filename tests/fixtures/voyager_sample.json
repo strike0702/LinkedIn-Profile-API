@@ -11,26 +11,71 @@
       "headline": "Software Engineer at Acme Corp",
       "summary": "Experienced engineer building scalable systems.",
       "publicIdentifier": "john-doe",
-      "locationName": "San Francisco, California, United States",
-      "profilePicture": "urn:li:fsd_profilePicture:123"
+      "locationName": null,
+      "location": {
+        "countryCode": "US",
+        "$type": "com.linkedin.voyager.dash.identity.profile.ProfileLocation"
+      },
+      "geoLocation": {
+        "geoUrn": "urn:li:fsd_geo:123",
+        "*geo": "urn:li:fsd_geo:123",
+        "$type": "com.linkedin.voyager.dash.identity.profile.ProfileGeoLocation"
+      },
+      "*profileSkills": "urn:li:collectionResponse:skills-page-1",
+      "profilePicture": {
+        "displayImageReference": {
+          "vectorImage": {
+            "rootUrl": "https://media.licdn.com/dms/image/profile/",
+            "artifacts": [
+              {"width": 100, "fileIdentifyingUrlPathSegment": "john-doe_100"},
+              {"width": 400, "fileIdentifyingUrlPathSegment": "john-doe_400"}
+            ]
+          }
+        },
+        "displayImageWithFrameReferenceUnion": {
+          "vectorImage": {
+            "rootUrl": "https://media.licdn.com/dms/image/framed/",
+            "artifacts": [
+              {"width": 200, "fileIdentifyingUrlPathSegment": "framed_200"}
+            ]
+          }
+        }
+      },
+      "backgroundPicture": {
+        "displayImageReference": {
+          "vectorImage": {
+            "rootUrl": "https://media.licdn.com/dms/image/background/",
+            "artifacts": [
+              {"width": 800, "fileIdentifyingUrlPathSegment": "cover_800"}
+            ]
+          }
+        }
+      }
     },
     {
-      "$type": "com.linkedin.voyager.dash.identity.profile.PhotoFilterPicture",
-      "entityUrn": "urn:li:fsd_profilePicture:123",
-      "rootUrl": "https://media.licdn.com/dms/image/profile/",
-      "artifacts": [
-        {"width": 100, "fileIdentifyingUrlPathSegment": "john-doe_100"},
-        {"width": 400, "fileIdentifyingUrlPathSegment": "john-doe_400"}
+      "$type": "com.linkedin.voyager.dash.common.Geo",
+      "entityUrn": "urn:li:fsd_geo:123",
+      "defaultLocalizedName": "San Francisco, California, United States",
+      "defaultLocalizedNameWithoutCountryName": "San Francisco, California"
+    },
+    {
+      "$type": "com.linkedin.restli.common.CollectionResponse",
+      "entityUrn": "urn:li:collectionResponse:skills-page-1",
+      "paging": {"total": 2, "count": 2, "start": 0, "links": []},
+      "*elements": [
+        "urn:li:fsd_skill:(ACoAAB123456789,1)",
+        "urn:li:fsd_skill:(ACoAAB123456789,2)"
       ]
     },
     {
-      "$type": "com.linkedin.voyager.dash.identity.profile.PhotoFilterPicture",
-      "entityUrn": "urn:li:fsd_backgroundPicture:456",
-      "displayImageReference": "background",
-      "rootUrl": "https://media.licdn.com/dms/image/background/",
-      "artifacts": [
-        {"width": 800, "fileIdentifyingUrlPathSegment": "cover_800"}
-      ]
+      "$type": "com.linkedin.voyager.dash.identity.profile.EmploymentType",
+      "entityUrn": "urn:li:fsd_employmentType:12",
+      "name": "Full-time"
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.EmploymentType",
+      "entityUrn": "urn:li:fsd_employmentType:18",
+      "name": "Internship"
     },
     {
       "$type": "com.linkedin.voyager.dash.identity.profile.Position",
@@ -38,6 +83,8 @@
       "companyName": "Acme Corp",
       "locationName": "San Francisco, CA",
       "description": "Building API platforms.",
+      "*employmentType": "urn:li:fsd_employmentType:12",
+      "employmentTypeUrn": "urn:li:fsd_employmentType:12",
       "dateRange": {
         "start": {"year": 2020, "month": 3},
         "end": {"year": 2023, "month": 6}
@@ -48,6 +95,8 @@
       "title": "Staff Engineer",
       "companyName": "Tech Inc",
       "locationName": "Remote",
+      "*employmentType": "urn:li:fsd_employmentType:18",
+      "employmentTypeUrn": "urn:li:fsd_employmentType:18",
       "dateRange": {
         "start": {"year": 2023, "month": 7},
         "end": {}
@@ -60,6 +109,7 @@
       "fieldOfStudy": "Computer Science",
       "grade": "3.8 GPA",
       "activities": "ACM, Hackathon club",
+      "description": "Focused on distributed systems.",
       "dateRange": {
         "start": {"year": 2012, "month": 9},
         "end": {"year": 2016, "month": 5}
@@ -67,10 +117,12 @@
     },
     {
       "$type": "com.linkedin.voyager.dash.identity.profile.Skill",
+      "entityUrn": "urn:li:fsd_skill:(ACoAAB123456789,1)",
       "name": "Python"
     },
     {
       "$type": "com.linkedin.voyager.dash.identity.profile.Skill",
+      "entityUrn": "urn:li:fsd_skill:(ACoAAB123456789,2)",
       "name": "FastAPI"
     },
     {
@@ -78,7 +130,7 @@
       "name": "AWS Solutions Architect",
       "authority": "Amazon Web Services",
       "url": "https://aws.amazon.com/certification/",
-      "timePeriod": {
+      "dateRange": {
         "start": {"year": 2021, "month": 4}
       }
     },
@@ -91,6 +143,23 @@
       "$type": "com.linkedin.voyager.dash.identity.profile.Language",
       "name": "Spanish",
       "proficiency": {"name": "PROFESSIONAL_WORKING"}
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.treasury.TreasuryMedia",
+      "title": "GitHub",
+      "providerName": "github.com",
+      "data": {"Url": "https://github.com/johndoe"}
+    },
+    {
+      "$type": "com.linkedin.voyager.dash.identity.profile.treasury.TreasuryMedia",
+      "title": "Resume",
+      "providerName": null,
+      "data": {
+        "NativeDocument": {
+          "transcribedDocumentUrl": "https://media.licdn.com/dms/document/resume.pdf",
+          "title": "Resume"
+        }
+      }
     }
   ]
 }

@@ -23,6 +23,7 @@ class Position(BaseModel):
     company_name: str | None = None
     location: str | None = None
     description: str | None = None
+    employment_type: str | None = None
     date_range: DateRange | None = None
 
 
@@ -32,6 +33,7 @@ class Education(BaseModel):
     field_of_study: str | None = None
     grade: str | None = None
     activities: str | None = None
+    description: str | None = None
     date_range: DateRange | None = None
 
 
@@ -51,6 +53,13 @@ class Language(BaseModel):
     proficiency: str | None = None
 
 
+class TreasuryItem(BaseModel):
+    title: str | None = None
+    url: str | None = None
+    provider: str | None = None
+    kind: str | None = None  # "url" | "document"
+
+
 class ProfileResponse(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
@@ -65,6 +74,8 @@ class ProfileResponse(BaseModel):
     positions: list[Position] = Field(default_factory=list)
     educations: list[Education] = Field(default_factory=list)
     skills: list[Skill] = Field(default_factory=list)
+    skills_total: int | None = None  # Voyager paging.total when skills are truncated
     certifications: list[Certification] = Field(default_factory=list)
     languages: list[Language] = Field(default_factory=list)
+    treasury_media: list[TreasuryItem] = Field(default_factory=list)
     fetched_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

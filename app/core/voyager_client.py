@@ -1,5 +1,6 @@
 import logging
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 from tenacity import (
@@ -17,6 +18,7 @@ from app.core.errors import (
     UnauthorizedError,
     UpstreamError,
 )
+from app.parsers.profile_parser import merge_skill_entities, skills_paging_info
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +49,22 @@ class VoyagerClient:
             f"{self.settings.voyager_base_url}/voyager/api/identity/dash/profiles"
             f"?q=memberIdentity&memberIdentity={slug}"
             f"&decorationId={decoration}"
+        )
+
+    def _skills_member_url(self, slug: str, start: int, count: int) -> str:
+        decoration = self.settings.skills_decoration_id
+        return (
+            f"{self.settings.voyager_base_url}/voyager/api/identity/dash/profileSkills"
+            f"?q=memberIdentity&memberIdentity={slug}"
+            f"&decorationId={decoration}"
+            f"&start={start}&count={count}"
+        )
+
+    def _skills_profile_urn_url(self, profile_urn: str, start: int, count: int) -> str:
+        encoded = quote(profile_urn, safe="")
+        return (
+            f"{self.settings.voyager_base_url}/voyager/api/identity/dash/profiles"
+            f"/{encoded}/skills?start={start}&count={count}"
         )
 
     async def _get_client(self) -> httpx.AsyncClient:
@@ -131,3 +149,118 @@ class VoyagerClient:
 
         self._map_status_error(response.status_code, slug)
         return {}  # unreachable
+
+    async def _get_json(self, url: str, slug: str) -> dict[str, Any] | None:
+        """GET JSON; return None on soft failures (404), raise on auth/rate-limit."""
+        client = await self._get_client()
+        headers = self._build_headers()
+        try:
+            response = await client.get(url, headers=headers)
+        except (httpx.TimeoutException, httpx.NetworkError) as exc:
+            logger.warning(
+                "Network error fetching skills page",
+                extra={"slug": slug, "error": str(exc)},
+            )
+            return None
+
+        if response.status_code == 200:
+            return response.json()
+        if response.status_code in (401, 403, 429):
+            logger.warning(
+                "Skills page fetch blocked; keeping first-page skills",
+                extra={"slug": slug, "status": response.status_code},
+            )
+            return None
+        if response.status_code == 404:
+            logger.warning(
+                "Skills page not found; keeping first-page skills",
+                extra={"slug": slug, "url": url},
+            )
+            return None
+        logger.warning(
+            "Skills page fetch failed; keeping first-page skills",
+            extra={
+                "slug": slug,
+                "status": response.status_code,
+                "url": url,
+                "body": response.text[:200],
+            },
+        )
+        return None
+
+    async def fetch_skills_page(
+        self,
+        slug: str,
+        *,
+        start: int,
+        count: int,
+        profile_urn: str | None = None,
+    ) -> dict[str, Any] | None:
+        """Fetch one skills page; try memberIdentity path then profile-URN path."""
+        payload = await self._get_json(self._skills_member_url(slug, start, count), slug)
+        if payload is not None:
+            return payload
+        if profile_urn:
+            return await self._get_json(
+                self._skills_profile_urn_url(profile_urn, start, count), slug
+            )
+        return None
+
+    @staticmethod
+    def _extract_skill_entities(payload: dict[str, Any]) -> list[dict[str, Any]]:
+        included = payload.get("included") or []
+        skills = [
+            e
+            for e in included
+            if isinstance(e, dict)
+            and (e.get("$type") or e.get("type") or "").endswith("Skill")
+        ]
+        if skills:
+            return skills
+
+        # Some responses nest skills under data.elements as objects
+        data = payload.get("data") or {}
+        elements = data.get("elements") or []
+        return [
+            e
+            for e in elements
+            if isinstance(e, dict)
+            and (e.get("$type") or e.get("type") or e.get("name"))
+            and (e.get("name") or (e.get("$type") or "").endswith("Skill"))
+        ]
+
+    async def enrich_with_all_skills(self, slug: str, raw: dict[str, Any]) -> dict[str, Any]:
+        """Page remaining skills into raw.included when total exceeds first page."""
+        total, existing, profile_urn = skills_paging_info(raw)
+        if total <= existing:
+            return raw
+
+        page_size = self.settings.skills_page_size
+        max_pages = self.settings.skills_max_pages
+        start = existing
+        collected: list[dict[str, Any]] = []
+
+        for _ in range(max_pages):
+            if start >= total:
+                break
+            page = await self.fetch_skills_page(
+                slug, start=start, count=page_size, profile_urn=profile_urn
+            )
+            if page is None:
+                logger.warning(
+                    "Skills pagination stopped early; returning partial skills",
+                    extra={"slug": slug, "have": existing + len(collected), "total": total},
+                )
+                break
+
+            skills = self._extract_skill_entities(page)
+            if not skills:
+                break
+            collected.extend(skills)
+            start += len(skills)
+            if len(skills) < page_size:
+                break
+
+        if not collected:
+            return raw
+        return merge_skill_entities(raw, collected)

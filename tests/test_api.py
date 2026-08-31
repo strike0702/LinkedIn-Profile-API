@@ -132,3 +132,86 @@ async def test_cache_hit(client, voyager_url, sample_payload):
 
     assert route.call_count == 1
     await service.close()
+
+
+def _paginated_payload(sample_payload):
+    import copy
+
+    payload = copy.deepcopy(sample_payload)
+    for entity in payload["included"]:
+        if entity.get("entityUrn") == "urn:li:collectionResponse:skills-page-1":
+            entity["paging"]["total"] = 4
+            break
+    return payload
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_skills_pagination_merges(client, voyager_url, sample_payload):
+    settings = get_settings()
+    payload = _paginated_payload(sample_payload)
+    respx.get(voyager_url).mock(return_value=httpx.Response(200, json=payload))
+    skills_url = (
+        f"{settings.voyager_base_url}/voyager/api/identity/dash/profileSkills"
+        f"?q=memberIdentity&memberIdentity=john-doe"
+        f"&decorationId={settings.skills_decoration_id}"
+        f"&start=2&count={settings.skills_page_size}"
+    )
+    skills_page = {
+        "included": [
+            {
+                "$type": "com.linkedin.voyager.dash.identity.profile.Skill",
+                "entityUrn": "urn:li:fsd_skill:(ACoAAB123456789,3)",
+                "name": "Docker",
+            },
+            {
+                "$type": "com.linkedin.voyager.dash.identity.profile.Skill",
+                "entityUrn": "urn:li:fsd_skill:(ACoAAB123456789,4)",
+                "name": "Kubernetes",
+            },
+        ]
+    }
+    skills_route = respx.get(skills_url).mock(
+        return_value=httpx.Response(200, json=skills_page)
+    )
+
+    response = await client.get("/api/profile", params={"url": "john-doe"})
+    assert response.status_code == 200
+    data = response.json()
+    assert [s["name"] for s in data["skills"]] == [
+        "Python",
+        "FastAPI",
+        "Docker",
+        "Kubernetes",
+    ]
+    assert skills_route.call_count == 1
+    assert len(data["treasury_media"]) == 2
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_skills_pagination_failure_keeps_first_page(
+    client, voyager_url, sample_payload
+):
+    settings = get_settings()
+    payload = _paginated_payload(sample_payload)
+    respx.get(voyager_url).mock(return_value=httpx.Response(200, json=payload))
+    skills_url = (
+        f"{settings.voyager_base_url}/voyager/api/identity/dash/profileSkills"
+        f"?q=memberIdentity&memberIdentity=john-doe"
+        f"&decorationId={settings.skills_decoration_id}"
+        f"&start=2&count={settings.skills_page_size}"
+    )
+    respx.get(skills_url).mock(return_value=httpx.Response(404, json={}))
+    from urllib.parse import quote
+
+    fallback = (
+        f"{settings.voyager_base_url}/voyager/api/identity/dash/profiles/"
+        f"{quote('urn:li:fsd_profile:ACoAAB123456789', safe='')}/skills"
+        f"?start=2&count={settings.skills_page_size}"
+    )
+    respx.get(fallback).mock(return_value=httpx.Response(404, json={}))
+
+    response = await client.get("/api/profile", params={"url": "john-doe"})
+    assert response.status_code == 200
+    assert [s["name"] for s in response.json()["skills"]] == ["Python", "FastAPI"]

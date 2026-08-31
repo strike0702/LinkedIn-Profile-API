@@ -21,8 +21,13 @@ class Settings(BaseSettings):
 
     voyager_base_url: str = "https://www.linkedin.com"
     decoration_id: str = (
-        "com.linkedin.voyager.dash.deco.identity.profile.FullProfileWithEntities-83"
+        "com.linkedin.voyager.dash.deco.identity.profile.FullProfileWithEntities-91"
     )
+    skills_decoration_id: str = (
+        "com.linkedin.voyager.dash.deco.identity.profile.FullProfileSkill-28"
+    )
+    skills_page_size: int = 50
+    skills_max_pages: int = 5
 
 
 @lru_cache

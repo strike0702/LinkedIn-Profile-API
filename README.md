@@ -6,7 +6,33 @@ Interactive API docs are available at `/docs` when the server is running.
 
 ## Why Voyager?
 
-LinkedIn's public pages are heavily obfuscated JavaScript bundles. The Voyager API returns normalized JSON with an `included[]` array of typed entities (`Profile`, `Position`, `Education`, etc.) that can be denormalized into a clean schema. This approach is faster, more reliable, and easier to maintain than headless browser scraping.
+LinkedIn's public pages are heavily obfuscated JavaScript bundles. The Voyager API returns normalized JSON with an `included[]` array of typed entities (`Profile`, `Position`, `Education`, etc.) that can be denormalized into a clean schema. This approach is faster, more reliable, and easier to maintain than headless browser scraping — **as long as Voyager still exposes the entities you need**.
+
+## LinkedIn SDUI migration (flagship-web)
+
+LinkedIn’s web app is moving profile surfaces from Voyager REST/`decorationId` JSON to **SDUI** (Server-Driven UI) over **React Server Components**.
+
+Observed in DevTools when opening a profile or skills details:
+
+| UI | Request | Response shape |
+|----|---------|----------------|
+| Profile | `GET /flagship-web/in/{slug}/` | RSC Flight stream (not Voyager `included[]`) |
+| Skills details | `GET /flagship-web/in/{slug}/details/skills/` | Same — SDUI layout tree |
+
+Markers in those payloads:
+
+- Screen IDs like `com.linkedin.sdui.flagshipnav.profile.Profile` and `...ProfileSkillDetails`
+- Proto types under `proto.sdui.*` (layout, state, actions)
+- Pagination via SDUI actions such as `proto.sdui.actions.requests.PaginationRequest` / `ServerRequest` (not Voyager `start`/`count` on `/profileSkills`)
+- RSC Flight framing (`1:"$Sreact.fragment"`, `I["…module…",[],"ComponentName"]`)
+
+**Why this matters for this API**
+
+- Voyager `FullProfileWithEntities-*` still works for a large slice of profile data (identity, positions, education, first page of skills, etc.).
+- Skills beyond the first ~20 used to be a separate Voyager collection call. That path is effectively dead (`/identity/dash/profileSkills` → 400; legacy `/identity/profiles/.../skills` → 410). The web UI now loads the full skills list through **flagship-web SDUI**, not Voyager.
+- SDUI responses are UI trees (components + actions), not a stable entity bag. Parsing them for structured data is brittle compared to Voyager `$type` entities.
+
+This service stays on Voyager while those endpoints remain useful. Expect gradual drift: more profile sections may vanish from Voyager and exist only under `/flagship-web/...`.
 
 ## Architecture
 
@@ -141,7 +167,7 @@ All errors return: `{"error": "...", "detail": "...", "status": N}`
 GET /voyager/api/identity/dash/profiles
   ?q=memberIdentity
   &memberIdentity={vanity_slug}
-  &decorationId=com.linkedin.voyager.dash.deco.identity.profile.FullProfileWithEntities-83
+  &decorationId=com.linkedin.voyager.dash.deco.identity.profile.FullProfileWithEntities-91
 ```
 
 **Required headers:**
@@ -182,6 +208,8 @@ GET /voyager/api/identity/dash/profiles
 - Only works for profiles visible to the authenticated account.
 - LinkedIn Terms of Service may restrict automated access — use responsibly.
 - `decorationId` values can change; update `app/config.py` if profiles return empty data.
+- **Skills truncation:** Voyager injects only the first skills page (~20). `skills_total` reports the full count when present. Remaining skills live on the SDUI skills screen (`/flagship-web/in/{slug}/details/skills/`); Voyager follow-up pagination is no longer available.
+- **SDUI drift:** Profile and skills details in the web app increasingly use `/flagship-web/...` SDUI/RSC instead of Voyager. See [LinkedIn SDUI migration](#linkedin-sdui-migration-flagship-web).
 
 ## Testing
 
@@ -197,9 +225,47 @@ Tests cover:
 - API integration with `respx` mocks (200, 401, 404, 429)
 - ASGI endpoint tests via `httpx.ASGITransport`
 
+## Web UI
+
+A small static demo lives in `web/` — paste a LinkedIn URL, call `GET /api/profile`, and render the response as a profile card (header, about, experience, education, skills, certifications, languages, featured media).
+
+No build step. No secrets in the browser. The UI is read-only and talks to your hosted FastAPI backend over HTTPS (CORS is already open on the API).
+
+### Local usage
+
+1. Start the API: `uvicorn app.main:app --reload --port 8000`
+2. Open `web/index.html` in a browser, **or** serve it:
+
+```bash
+cd web && python -m http.server 5173
+# then visit http://localhost:5173/?api=http://localhost:8000
+```
+
+API base resolution (first match wins):
+
+1. `?api=` query param (also saved to `localStorage`)
+2. `localStorage` key `linkedin_profile_api_base`
+3. Default in `web/app.js` (`DEFAULT_API_BASE` — set this to your Render URL)
+
+### Deploy UI on Vercel
+
+1. Push the repo to GitHub.
+2. In [Vercel](https://vercel.com), **Import** the repo.
+3. Set **Root Directory** to `web`.
+4. Framework preset: **Other** (no build command, no output directory).
+5. Deploy.
+
+Or via CLI:
+
+```bash
+npx vercel --cwd web
+```
+
+After deploy, open `https://<project>.vercel.app/?api=https://<your-service>.onrender.com` once so the UI remembers your API base — or edit `DEFAULT_API_BASE` in `web/app.js` before deploying.
+
 ## Deployment (Render)
 
-This repo includes a `render.yaml` blueprint and `Dockerfile`.
+This repo includes a `render.yaml` blueprint and `Dockerfile`. The **API** stays on Render; the **UI** is the separate Vercel static site above.
 
 ### Deploy via Render Dashboard
 
@@ -240,6 +306,10 @@ app/
 └── services/
     ├── cache.py
     └── profile_service.py
+web/                     # Static demo UI (Vercel)
+├── index.html
+├── app.js
+└── vercel.json
 tests/
 ├── fixtures/voyager_sample.json
 ├── test_url_normalizer.py

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LinkedIn Profile Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#eff6ff",
+                100: "#dbeafe",
+                500: "#0a66c2",
+                600: "#004182",
+                700: "#003366",
+              },
+            },
+            fontFamily: {
+              sans: [
+                "Inter",
+                "system-ui",
+                "-apple-system",
+                "Segoe UI",
+                "Roboto",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(180deg, #f3f6f8 0%, #eef2f5 100%);
+        min-height: 100vh;
+      }
+      .summary-collapsed {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .spinner {
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        border-radius: 9999px;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="font-sans text-slate-800 antialiased">
+    <div class="mx-auto max-w-3xl px-4 py-8 sm:py-12">
+      <header class="mb-8 text-center">
+        <p class="mb-2 text-sm font-semibold uppercase tracking-wider text-brand-500">
+          LinkedIn Profile API
+        </p>
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          Profile Viewer
+        </h1>
+        <p class="mt-2 text-slate-600">
+          Paste a LinkedIn profile URL and view structured profile data.
+        </p>
+      </header>
+
+      <form
+        id="search-form"
+        class="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      >
+        <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+          <label class="sr-only" for="url-input">LinkedIn profile URL</label>
+          <input
+            id="url-input"
+            type="text"
+            autocomplete="off"
+            placeholder="https://www.linkedin.com/in/username/"
+            class="w-full flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none ring-brand-500 transition focus:bg-white focus:ring-2"
+          />
+          <button
+            id="submit-btn"
+            type="submit"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <span id="btn-label">Fetch profile</span>
+            <span id="btn-spinner" class="spinner hidden" aria-hidden="true"></span>
+          </button>
+        </div>
+        <p id="api-hint" class="border-t border-slate-100 px-4 py-2 text-xs text-slate-500"></p>
+      </form>
+
+      <div
+        id="error-banner"
+        class="mb-6 hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+        role="alert"
+      ></div>
+
+      <div id="result" class="hidden space-y-5">
+        <!-- Header card -->
+        <section
+          id="section-header"
+          class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        >
+          <div
+            id="cover"
+            class="h-28 bg-gradient-to-r from-brand-500 to-brand-700 bg-cover bg-center sm:h-36"
+          ></div>
+          <div class="relative px-5 pb-5 pt-0 sm:px-6">
+            <div
+              id="avatar"
+              class="-mt-10 mb-3 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-brand-100 text-xl font-bold text-brand-600 shadow-sm sm:h-24 sm:w-24 sm:text-2xl"
+            ></div>
+            <h2 id="full-name" class="text-2xl font-bold leading-tight text-slate-900"></h2>
+            <p id="headline" class="mt-1 text-sm leading-snug text-slate-600"></p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">
+              <span id="location" class="hidden"></span>
+              <a
+                id="profile-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hidden font-medium text-brand-500 hover:underline"
+              >
+                View on LinkedIn →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- About -->
+        <section
+          id="section-about"
+          class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        >
+          <h3 class="mb-3 text-lg font-semibold text-slate-900">About</h3>
+          <p id="summary" class="whitespace-pre-wrap text-sm leading-relaxed text-slate-700"></p>
+          <button
+            id="summary-toggle"
+            type="button"
+            class="mt-2 hidden text-sm font-medium text-brand-500 hover:underline"
+          >
+            Show more
+          </button>
+        </section>
+
+        <!-- Experience -->
+        <section
+          id="section-experience"
+          class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        >
+          <h3 class="mb-4 text-lg font-semibold text-slate-900">Experience</h3>
+          <div id="positions" class="space-y-5"></div>
+        </section>
+
+        <!-- Education -->
+        <section
+          id="section-education"
+          class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        >
+          <h3 class="mb-4 text-lg font-semibold text-slate-900">Education</h3>
+          <div id="educations" class="space-y-5"></div>
+        </section>
+
+        <!-- Skills -->
+        <section
+          id="section-skills"
+          class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        >
+          <h3 class="mb-4 text-lg font-semibold text-slate-900">Skills</h3>
+          <div id="skills" class="flex flex-wrap gap-2"></div>
+        </section>
+
+        <!-- Certifications -->
+        <section
+          id="section-certs"
+          class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        >
+          <h3 class="mb-4 text-lg font-semibold text-slate-900">Certifications</h3>
+          <div id="certifications" class="space-y-4"></div>
+        </section>
+
+        <!-- Languages -->
+        <section
+          id="section-languages"
+          class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        >
+          <h3 class="mb-4 text-lg font-semibold text-slate-900">Languages</h3>
+          <div id="languages" class="space-y-2"></div>
+        </section>
+
+        <!-- Treasury media -->
+        <section
+          id="section-media"
+          class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+        >
+          <h3 class="mb-4 text-lg font-semibold text-slate-900">Featured</h3>
+          <div id="treasury" class="space-y-3"></div>
+        </section>
+
+        <p id="fetched-at" class="text-center text-xs text-slate-400"></p>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
