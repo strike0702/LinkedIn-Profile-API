@@ -180,6 +180,16 @@ pytest -v
 
 ## Production Trade-offs & Limitations
 
+### Auth model — what we rejected
+
+We considered **per-request session cookies**: clients would send their own `X-Li-At` + `X-JSessionID` headers so the server holds no central account and never signs anyone out.
+
+**We decided against it.** Routing a reviewer’s personal LinkedIn session through a third-party API is a ban risk — LinkedIn can flag the unusual IP / client fingerprint and lock or restrict that account. For a hiring challenge, that is an unacceptable ask of the reviewer.
+
+**What we ship instead:** server-side env cookies only (`LI_AT` / `JSESSIONID`). Owner/private use; if the hosted session dies, reviewers spin up local with *their* cookies (see [Notice](#notice-for-reviewers--session-expiry--60s-fallback)) — credentials never leave their machine via the public demo.
+
+### Other limits
+
 - **Session cookie fragility** — `li_at` / `JSESSIONID` expire or invalidate on IP/logout; refresh env vars (or use the local fallback above). Never commit cookies.
 - **Single-account rate limits + TTL cache** — one LinkedIn session backs all traffic; in-memory cache (`CACHE_TTL_SECONDS`, default 3600) and per-IP rate limiting (`RATE_LIMIT`, default `10/minute`) protect it.
 - **Skills pagination boundary** — Voyager returns the first skills page (~20); `skills_total` reports the full count when available. Remaining skills live only under flagship-web SDUI; Voyager follow-up pagination is gone.
