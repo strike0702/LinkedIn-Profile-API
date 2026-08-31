@@ -20,6 +20,8 @@ curl https://linkedin-profile-api-bsa2.onrender.com/health
 # {"status":"ok"}
 ```
 
+**Keep-alive:** a GitHub Actions cron (`.github/workflows/keep-render-alive.yml`) hits `/health` every **12 minutes** so the Render free instance stays warm for reviewers. Manual re-run is available via **Actions → Keep Render Alive → Run workflow**. Schedules can drift a few minutes under load.
+
 <p align="center">
   <img src="assets/demo-ui.png" alt="Web Demo UI" width="900" />
 </p>
