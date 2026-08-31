@@ -1,0 +1,231 @@
+{
+    "first_name": "Shreyan",
+    "last_name": "Bagchi",
+    "headline": "MTS@Oracle (OCI) || Backend Engineer || IIT Bhubaneswar EE’25 || Expert @Codeforces || 4 Star @Codechef",
+    "summary": "Software Engineer with experience at Oracle, focused on backend development, distributed systems and building reliable, scalable software. I enjoy working across system design, APIs, cloud-native technologies, and automation, with a strong foundation in Java, Python and modern backend frameworks.I'm particularly interested in AI/ML and exploring how intelligent systems can be integrated into real-world products. Enjoy taking ownership of problems e2e, learning new technologies and solving challenging engineering problems.Outside of work, I'm passionate about football and quizzing.",
+    "public_identifier": "shreyan-bagchi",
+    "profile_url": "https://www.linkedin.com/in/shreyan-bagchi/",
+    "urn": "urn:li:fsd_profile:ACoAADe-Bc0BX-fYMGO8bW0JQUPeONOEBeUgIHU",
+    "location": {
+        "city": "Raurkela",
+        "state": "Odisha",
+        "country": "IN",
+        "display": "Raurkela, Odisha, India"
+    },
+    "profile_picture_url": "https://media.licdn.com/dms/image/v2/D5603AQE7iwPnyc2PTg/profile-displayphoto-crop_800_800/B56Zf5iyiJHQAQ-/0/1752238338238?e=1789603200&v=beta&t=n-fT6chYSrn5RGfIFFsjUjcNdUYK-REuzXxpkjPy4-k",
+    "cover_picture_url": "https://media.licdn.com/dms/image/v2/D5616AQGLikZ3SIyoIw/profile-displaybackgroundimage-shrink_350_1400/profile-displaybackgroundimage-shrink_350_1400/0/1682254863647?e=1789603200&v=beta&t=HTHuBRneUfnrXqnFgvtXe79vZviCiJ6X3hc-BaF9jQw",
+    "positions": [
+        {
+            "title": "Project Intern",
+            "company_name": "Oracle",
+            "location": "Bengaluru",
+            "description": "• Worked with the Network Load Balancer team on a managed Layer 4 load balancing service within Oracle Cloud Infrastructure.\n• Developed automated testing and validation utilities using Java, Terraform, and socket programming to extend Continuous Traffic Test workflows.",
+            "employment_type": "Internship",
+            "date_range": {
+                "start_year": 2024,
+                "start_month": 5,
+                "end_year": 2024,
+                "end_month": 7,
+                "is_current": false
+            }
+        },
+        {
+            "title": "Student Placement Coordinator ",
+            "company_name": "Career Development Cell, IIT Bhubaneswar",
+            "location": null,
+            "description": "• Served as a Student Placement Coordinator, managing the end-to-end recruitment pipeline for 450+ students, from initial company outreach and engagement to scheduling tests, interviews, and final placement activities.\n• Acted as the primary coordination point between recruiters and the institute, facilitating communication, resolving logistical issues, and ensuring smooth execution of the recruitment process.",
+            "employment_type": null,
+            "date_range": {
+                "start_year": 2024,
+                "start_month": 5,
+                "end_year": 2025,
+                "end_month": 5,
+                "is_current": false
+            }
+        },
+        {
+            "title": "Associate",
+            "company_name": "Neuromancers - IIT Bhubaneswar",
+            "location": null,
+            "description": null,
+            "employment_type": null,
+            "date_range": {
+                "start_year": 2022,
+                "start_month": 8,
+                "end_year": 2025,
+                "end_month": 5,
+                "is_current": false
+            }
+        },
+        {
+            "title": "Member of Technical Staff",
+            "company_name": "Oracle",
+            "location": "Bengaluru",
+            "description": "• Part of the AutoNOC team, an incident response and orchestration platform for automating mitigation and remediation of large-scale network incidents across Oracle Cloud data centers.\n• Built backend features and automation workflows using Java, Spring Boot, Oracle Database, and Apache Airflow, supporting 150+ incidents and 200+ workflows daily across 7+ production realms.",
+            "employment_type": "Full-time",
+            "date_range": {
+                "start_year": 2025,
+                "start_month": 7,
+                "end_year": 2026,
+                "end_month": 4,
+                "is_current": false
+            }
+        },
+        {
+            "title": "Football Secretary ",
+            "company_name": "Indian Institute of Technology Bhubaneswar (IIT Bhubaneswar)",
+            "location": null,
+            "description": null,
+            "employment_type": null,
+            "date_range": {
+                "start_year": 2022,
+                "start_month": 5,
+                "end_year": 2023,
+                "end_month": 4,
+                "is_current": false
+            }
+        }
+    ],
+    "educations": [
+        {
+            "school_name": "Indian Institute of Technology, Bhubaneswar",
+            "degree_name": "Bachelor of Technology",
+            "field_of_study": "Electrical and Electronics Engineering",
+            "grade": null,
+            "activities": "Inter-IIT Football Team\nNeuromancers: Programming Society\nQuiz Soc",
+            "description": "CGPA: 8.1/10",
+            "date_range": {
+                "start_year": 2021,
+                "start_month": 11,
+                "end_year": 2025,
+                "end_month": 5,
+                "is_current": false
+            }
+        },
+        {
+            "school_name": "St Arnolds School Rourkela ",
+            "degree_name": null,
+            "field_of_study": null,
+            "grade": null,
+            "activities": "Football, Quizzing",
+            "description": null,
+            "date_range": {
+                "start_year": 2009,
+                "start_month": 4,
+                "end_year": 2021,
+                "end_month": 6,
+                "is_current": false
+            }
+        }
+    ],
+    "skills": [
+        {
+            "name": "PostgreSQL"
+        },
+        {
+            "name": "Network Load Balancing"
+        },
+        {
+            "name": "TypeScript"
+        },
+        {
+            "name": "Hibernate"
+        },
+        {
+            "name": "Java"
+        },
+        {
+            "name": "Oracle Database"
+        },
+        {
+            "name": "Linux"
+        },
+        {
+            "name": "Full-Stack Development"
+        },
+        {
+            "name": "Spring Security"
+        },
+        {
+            "name": "Microservices"
+        },
+        {
+            "name": "Apache Kafka"
+        },
+        {
+            "name": "Confluence"
+        },
+        {
+            "name": "SQL"
+        },
+        {
+            "name": "Continuous Integration and Continuous Delivery (CI/CD)"
+        },
+        {
+            "name": "Jira"
+        },
+        {
+            "name": "Socket Programming"
+        },
+        {
+            "name": "Redis"
+        },
+        {
+            "name": "Spring Data"
+        },
+        {
+            "name": "Liquibase"
+        },
+        {
+            "name": "Spring Boot"
+        }
+    ],
+    "skills_total": 47,
+    "certifications": [
+        {
+            "name": "Machine Learning by Andrew Ng",
+            "authority": "Stanford University",
+            "url": "https://coursera.org/share/55308cfa7dbd20eff26198a772ec6fa4",
+            "issue_date": "2023-06"
+        }
+    ],
+    "languages": [
+        {
+            "name": "English",
+            "proficiency": "PROFESSIONAL_WORKING"
+        },
+        {
+            "name": "Hindi",
+            "proficiency": "PROFESSIONAL_WORKING"
+        },
+        {
+            "name": "Bengali",
+            "proficiency": "NATIVE_OR_BILINGUAL"
+        },
+        {
+            "name": "Oriya",
+            "proficiency": "ELEMENTARY"
+        }
+    ],
+    "treasury_media": [
+        {
+            "title": "strike07 | CodeChef",
+            "url": "https://www.codechef.com/users/strike07",
+            "provider": "codechef.com",
+            "kind": "url"
+        },
+        {
+            "title": "Resume",
+            "url": "https://media.licdn.com/dms/document/media/v2/D562DAQF9VF51ag3xAg/profile-treasury-document-sanitized-pdf/B56aA_LjvdHIAw-/0/1787766390942?e=1788800400&v=beta&t=uAZgkC995qJ3-zk_gN-8wCJ4AoVDJ4WEuZFmfMZ--W0",
+            "provider": null,
+            "kind": "document"
+        },
+        {
+            "title": "strike07 - Codeforces",
+            "url": "https://codeforces.com/profile/strike07",
+            "provider": "Codeforces",
+            "kind": "url"
+        }
+    ],
+    "fetched_at": "2026-08-31T16:00:40.977501Z"
+}
