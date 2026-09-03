@@ -32,7 +32,7 @@ curl https://linkedin-profile-api-bsa2.onrender.com/health
 
 The hosted Render instance is pre-configured with `LI_AT` + `JSESSIONID`. LinkedIn sessions can invalidate at any time (expiry, IP shift, logout).
 
-**If the live API returns `401 Unauthorized`:**
+**If the live API returns `401 Unauthorized / 403 Forbidden`:**
 
 1. Extract your own `li_at` and `JSESSIONID` (30s — see [Quickstart](#quickstart)).
 2. Run locally:
